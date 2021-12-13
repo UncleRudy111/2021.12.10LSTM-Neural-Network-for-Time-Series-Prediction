@@ -32,8 +32,6 @@ def plot_results_multiple(predicted_data, true_data, prediction_len):
         plt.legend()
     plt.show()
 
-
-
 configs = json.load(open('config.json', 'r'))
 if not os.path.exists(configs['model']['save_dir']): os.makedirs(configs['model']['save_dir'])
 
@@ -50,16 +48,16 @@ x, y = data.get_train_data(
     normalise=configs['data']['normalise']
 )
 
-# in-memory training
-model.train(
-    x,
-    y,
-    epochs = configs['training']['epochs'],
-    batch_size = configs['training']['batch_size'],
-    save_dir = configs['model']['save_dir']
-)
+# # in-memory training
+# model.train(
+#     x,
+#     y,
+#     epochs = configs['training']['epochs'],
+#     batch_size = configs['training']['batch_size'],
+#     save_dir = configs['model']['save_dir']
+# )
 
-'''
+
 # out-of memory generative training
 steps_per_epoch = math.ceil((data.len_train - configs['data']['sequence_length']) / configs['training']['batch_size'])
 data_gen = data.generate_train_batch(
@@ -74,7 +72,6 @@ model.train_generator(
     steps_per_epoch=steps_per_epoch,
     save_dir=configs['model']['save_dir']
 )
-'''
 
 
 x_test, y_test = data.get_test_data(
@@ -85,6 +82,9 @@ x_test, y_test = data.get_test_data(
 # predictions = model.predict_sequences_multiple(x_test, configs['data']['sequence_length'], configs['data']['sequence_length'])
 # predictions = model.predict_sequence_full(x_test, configs['data']['sequence_length'])
 predictions = model.predict_point_by_point(x_test)
+
+'''恢复数据（取消标准化）'''
+inverse_predictions = data.inverse_normalise_windows(x_test, y_test)
 
 # plot_results_multiple(predictions, y_test, configs['data']['sequence_length'])
 plot_results(predictions, y_test)
